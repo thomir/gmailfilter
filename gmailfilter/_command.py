@@ -41,4 +41,3 @@ def get_rule_globals_dict():
         'IMAPServer': IMAPServer
     }
     return rule_globals
-
