@@ -3,7 +3,7 @@ import logging
 
 from imapclient import IMAPClient
 
-from gmailfilter._message import Message
+from gmailfilter._message import EmailMessage as Message
 
 
 # TODO: Accept config from command line, encapsulate in a dict and pass

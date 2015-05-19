@@ -4,6 +4,35 @@ from email.utils import parseaddr
 
 class Message(object):
 
+    """An interface to represent an email message."""
+
+    def subject(self):
+        """Return the subject string of the email message."""
+
+    def from_(self):
+        """Return the Sender of the email."""
+
+    def uid(self):
+        """Return the mesage uid."""
+
+    def get_headers(self):
+        """Get the dictionary of headers."""
+        # TODO: Define a better interface here that deals with the fact that
+        # message headers can be added multiple times, so it's not actually
+        # good enough to store them in a dictionary.
+
+    def get_date(self):
+        """Get the date the message was received."""
+
+    def get_flags(self):
+        """Get the flags set on the message."""
+
+    def __repr__(self):
+        return "<Message %d %r>" % (self.uid(), self.subject())
+
+
+class EmailMessage(Message):
+
     """An interface to represent an email message.
 
     The message is lazily-created. Methods such as 'subject' cause network
