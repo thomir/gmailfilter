@@ -1,4 +1,5 @@
 
+import logging
 
 """Classes that manipulate mails."""
 
@@ -10,14 +11,14 @@ class Action(object):
 
     """
 
-    def process(self, client_conn, message_uid):
+    def process(self, client_conn, message):
         """Run the action.
 
         'client_conn' will be an IMAPClient.IMAPClient object, possibly with
         access to dangerous methods removed (TODO: Document this interface
         explicitly).
 
-        'message_uid' will be the message uid, as a string.
+        'message' will be a message interface object.
 
         If this method raises any exceptions, action processing will stop, and
         an error will be logged (TODO: Actually do that somewhere).
@@ -30,7 +31,7 @@ class Move(Action):
     def __init__(self, target_folder):
         self._target_folder = target_folder
 
-    def process(self, conn, uid):
+    def process(self, conn, message):
         # TODO: optimise this by trying the copy, and if we get 'NO' with
         # 'TRYCREATE' then, and only then try and create the folder. Removes the
         # overhead of the existance check for every message,
@@ -39,7 +40,7 @@ class Move(Action):
 
             assert status.lower() == "success", "Unable to create folder %s" % self._target_folder
 
-        conn.copy(uid, self._target_folder)
+        conn.copy(message.uid(), self._target_folder)
         # TODO: Maybe provide logging facilities in parent 'Action' class?
-        # logging.info("Deleting %s" % uid)
-        conn.delete_messages(uid)
+        conn.delete_messages(message.uid())
+        logging.info("Moving message %r to %s" % (message, self._target_folder))

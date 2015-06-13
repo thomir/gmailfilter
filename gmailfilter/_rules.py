@@ -108,5 +108,5 @@ class SimpleRuleProcessor(object):
         for test, *actions in self._ruleset:
             if test.match(message):
                 for action in actions:
-                    action.process(self._connection._client, str(message.uid()))
+                    action.process(self._connection, message)
                 break

@@ -31,3 +31,4 @@ class SequenceChunkTests(TestCase):
         self.assertSequenceChunk(5, 1, ['1', '2', '3', '4', '5'])
 
 
+

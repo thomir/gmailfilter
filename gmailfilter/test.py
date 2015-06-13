@@ -6,11 +6,17 @@ file to select messages.
 
 """
 
+import operator
+import unicodedata
+
+from gmailfilter.messageutils import get_list_id
+
 
 __all__ = [
     'Test',
     'And',
     'Or',
+    'MatchesHeader',
 ]
 
 class Test(object):
@@ -104,3 +110,65 @@ class MatchesHeader(Test):
             else:
                 return True
         return False
+
+
+class SubjectContains(Test):
+
+    """Check whether a subject contains a certain phrase.
+
+    Can do both case sensitive, and case insensitive matching.
+
+    By default, matches are case sensitive::
+
+    >>> SubjectContains("Hello World")
+
+    ...will match for the string 'Hello World' exactly anywhere in the
+    subject. Searches can be made case-insensitive like so::
+
+    >>> SubjectContains("welcome to", case_sensitive=False)
+
+    Case sensitivity controls both whether we consider character case, and
+    whether we consider character accents.
+
+    """
+
+    def __init__(self, search_string, case_sensitive=False):
+        self._search_string = search_string
+        self._case_sensitive = case_sensitive
+
+    def match(self, message):
+        subject = message.get_headers()['Subject']
+        if self._case_sensitive:
+            return subject.contains(self._search_string)
+        else:
+            return sobject.casefold().contains(self._search_string.casefold())
+
+
+class ListId(Test):
+
+    """Match for mailinglist messages from a particular list-id.
+
+    """
+
+    def __init__(self, target_list):
+        self._target_list = target_list
+
+    def match(self, message):
+
+        return get_list_id(message) == self._target_list
+
+
+# def caseless_comparison(str1, str2, op):
+#     """Perform probably-correct caseless comparison between two strings.
+
+#     This is surprisingly complex in a unicode world.  We need to deal with
+#     characters that have different case-forms, as well as character accents.
+
+#     'op' should be a callable that accepts two arguments, and returns True
+#     or False. Good candidates are those from the 'operator' module...
+
+#     """
+#     return op(
+#         unicodedata.normalize("NFKD", str1.casefold()),
+#         unicodedata.normalize("NFKD", str2.casefold()),
+#         )
