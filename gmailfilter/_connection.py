@@ -1,5 +1,6 @@
 from contextlib import contextmanager
 import configparser
+import functools
 import logging
 import os
 import os.path
@@ -270,7 +271,18 @@ class ConnectionProxy(object):
             'set_gmail_labels',
         )
         if name in allowed:
-            return getattr(self._wrapped, name)
+            # Wrap these functions so they always use the uid, not the sequence
+            # id.
+            function = getattr(self._wrapped, name)
+            def wrapper(client, fn, *args, **kwargs):
+                old = client.use_uid
+                client.use_uid = True
+                try:
+                    return fn(*args, **kwargs)
+                finally:
+                    client.use_uid = old
+            return functools.partial(wrapper, self._wrapped, function)
+
         raise AttributeError(name)
 
 
