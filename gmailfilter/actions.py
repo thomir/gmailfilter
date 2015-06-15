@@ -44,3 +44,10 @@ class Move(Action):
         # TODO: Maybe provide logging facilities in parent 'Action' class?
         conn.delete_messages(message.uid())
         logging.info("Moving message %r to %s" % (message, self._target_folder))
+
+
+class DeleteMessage(Action):
+
+    def process(self, conn, message):
+        conn.delete_messages(message.uid())
+        logging.info("Deleting message %r" % message)
