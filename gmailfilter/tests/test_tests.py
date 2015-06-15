@@ -7,6 +7,7 @@ from gmailfilter.test import (
     And,
     Or,
     MatchesHeader,
+    SubjectContains,
 )
 from gmailfilter._message import Message
 
@@ -86,3 +87,39 @@ class TestMatchesHeaderTests(TestCase, TestFactoryMixin):
     def test_passes_with_correct_value(self):
         message = self.get_email_message(headers=dict(SomeHeader='123'))
         self.assertTrue(MatchesHeader('SomeHeader', '123').match(message))
+
+
+class SubjectContainsTests(TestCase, TestFactoryMixin):
+
+    def test_case_sensitive_contains_matches_whole_string(self):
+        message = self.get_email_message(subject='Hello World')
+        self.assertTrue(SubjectContains('Hello World').match(message))
+
+    def test_case_sensitive_contains_matches_partial_string(self):
+        message = self.get_email_message(subject='Hello World')
+        self.assertTrue(SubjectContains('ello Worl').match(message))
+
+    def test_case_sensitive_is_the_default(self):
+        message = self.get_email_message(subject='Hello World')
+        self.assertFalse(SubjectContains('hello world').match(message))
+
+    def test_case_insensitive_works_with_ascii(self):
+        message = self.get_email_message(subject='Hello World')
+        self.assertTrue(
+            SubjectContains('hello world', case_sensitive=False).match(message)
+        )
+
+    def test_case_insensitive_works_with_unicode(self):
+        message = self.get_email_message(subject='Hello BUẞE')
+        self.assertTrue(
+            SubjectContains('hello BUSSE', case_sensitive=False).match(message)
+        )
+        self.assertTrue(
+            SubjectContains('hello Buße', case_sensitive=False).match(message)
+        )
+
+    def test_case_insensitive_works_with_unicode_accents(self):
+        message = self.get_email_message(subject='Hêllo')
+        self.assertTrue(
+            SubjectContains('h\xeallo', case_sensitive=False).match(message)
+        )

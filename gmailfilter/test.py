@@ -132,7 +132,7 @@ class SubjectContains(Test):
 
     """
 
-    def __init__(self, search_string, case_sensitive=False):
+    def __init__(self, search_string, case_sensitive=True):
         self._search_string = search_string
         self._case_sensitive = case_sensitive
 
@@ -154,7 +154,6 @@ class ListId(Test):
         self._target_list = target_list
 
     def match(self, message):
-
         return get_list_id(message) == self._target_list
 
 
