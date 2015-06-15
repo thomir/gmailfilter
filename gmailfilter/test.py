@@ -139,9 +139,9 @@ class SubjectContains(Test):
     def match(self, message):
         subject = message.get_headers()['Subject']
         if self._case_sensitive:
-            return subject.contains(self._search_string)
+            return self._search_string in subject
         else:
-            return sobject.casefold().contains(self._search_string.casefold())
+            return self._search_string.casefold() in subject.casefold()
 
 
 class ListId(Test):
