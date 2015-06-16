@@ -8,6 +8,7 @@ from gmailfilter.test import (
     Or,
     MatchesHeader,
     SubjectContains,
+    ListId,
 )
 from gmailfilter._message import Message
 
@@ -123,3 +124,18 @@ class SubjectContainsTests(TestCase, TestFactoryMixin):
         self.assertTrue(
             SubjectContains('h\xeallo', case_sensitive=False).match(message)
         )
+
+
+class ListIdTests(TestCase, TestFactoryMixin):
+
+    def test_list_id_match(self):
+        message = self.get_email_message(headers={'List-Id': 'foo.bar'})
+        self.assertTrue(ListId('foo.bar').match(message))
+
+    def test_list_id_mismatch(self):
+        message = self.get_email_message(headers={'List-Id': 'foo.bar'})
+        self.assertFalse(ListId('something.else').match(message))
+
+    def test_non_list_message(self):
+        message = self.get_email_message()
+        self.assertFalse(ListId('something.else').match(message))
