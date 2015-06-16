@@ -23,6 +23,7 @@ def run():
     else:
         run_new_filter()
 
+
 def run_old_filter():
     """Run the old, pre v1 filter agent. This will get deleted soon."""
     rules_path = get_filter_file_or_raise()

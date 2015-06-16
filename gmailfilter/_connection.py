@@ -360,6 +360,9 @@ class ServerInfo(object):
     def write_template_config_file(cls, path=None):
         """Write a template config file to disk."""
         path = path or default_credentials_file_location()
+        directory = os.path.dirname(path)
+        if not os.path.exists(directory):
+            os.makedirs(directory)
         with open(path, 'w') as template_file:
             template_file.write(textwrap.dedent('''
                 # Credentials config file.

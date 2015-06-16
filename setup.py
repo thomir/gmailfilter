@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 
+import sys
+
+assert sys.version >= '3'
 from setuptools.command.test import test as TestCommand
 from setuptools import find_packages, setup
 
