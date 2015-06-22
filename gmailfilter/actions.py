@@ -51,3 +51,20 @@ class DeleteMessage(Action):
     def process(self, conn, message):
         conn.delete_messages(message.uid())
         logging.info("Deleting message %r" % message)
+
+
+class LogMessage(Action):
+
+    """A Simple action that just logs the message."""
+
+    def __init__(self, message_template="LOG Message={}"):
+        """Create a new LogMessage object.
+
+        The message_template string must be a string with a single '{}' in it,
+        which will be replaced with the message's repr().
+
+        """
+        self.message_template = message_template
+
+    def process(self, conn, message):
+        logging.info(self.message_template.format(repr(message)))
