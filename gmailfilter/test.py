@@ -6,8 +6,14 @@ file to select messages.
 
 """
 
+from datetime import (
+    datetime,
+    timedelta,
+)
 import operator
 import unicodedata
+
+import imapclient
 
 from gmailfilter.messageutils import get_list_id
 
@@ -80,6 +86,17 @@ class Or(Test):
 
     def match(self, message):
         return any([t.match(message) for t in self._tests])
+
+
+class Not(Test):
+
+    """Invert the output of any single test."""
+
+    def __init__(self, test):
+        self._test = test
+
+    def match(self, message):
+        return not self._test.match(message)
 
 
 class MatchesHeader(Test):
@@ -155,6 +172,87 @@ class ListId(Test):
 
     def match(self, message):
         return get_list_id(message) == self._target_list
+
+
+class HasFlag(Test):
+
+    """Test for certain flags being set on a message.
+
+    This test can be given any string for a flag, although the following are
+    provided as a convenience:
+
+    HasFlag.ANSWERED
+    HasFlag.DELETED
+    HasFlag.DRAFT
+    HasFlag.FLAGGED
+    HasFlag.RECENT
+    HasFlag.SEEN
+
+    """
+
+    ANSWERED = imapclient.ANSWERED
+    DELETED = imapclient.DELETED
+    DRAFT = imapclient.DRAFT
+    FLAGGED = imapclient.FLAGGED
+    RECENT = imapclient.RECENT
+    SEEN = imapclient.SEEN
+
+    def __init__(self, flag):
+        self.expected_flag = flag
+
+    def match(self, message):
+        return self.expected_flag in message.get_flags()
+
+
+def IsAnswered():
+    return HasFlag(HasFlag.ANSWERED)
+
+
+def IsDeleted():
+    return HasFlag(HasFlag.DELETED)
+
+
+def IsDraft():
+    return HasFlag(HasFlag.DRAFT)
+
+
+def IsFlagged():
+    return HasFlag(HasFlag.FLAGGED)
+
+
+def IsRecent():
+    return HasFlag(HasFlag.RECENT)
+
+
+def IsRead():
+    return HasFlag(HasFlag.SEEN)
+
+
+# Provide a function with the same name as the imap flag name, even though
+# it's bad english
+IsSeen = IsRead
+
+
+# TODO: Need a way to provide alternative values for the datetime.now() call
+# here, otherwise it's hard to test.
+class MessageOlderThan(Test):
+
+    """Test that a message is older than a certain age.
+
+    Age is specified as a python datetime.timedelta object. For example:
+
+    >>> from datetime import timedelta
+    >>> MessageOlderThan(timedelta(days=12))
+
+    """
+
+    def __init__(self, age):
+        if not isinstance(age, timedelta):
+            raise TypeError("'age' must be a datetime.timedelta object.")
+        self._age = age
+
+    def match(self, message):
+        return message.get_date() + self._age < datetime.now()
 
 
 # def caseless_comparison(str1, str2, op):

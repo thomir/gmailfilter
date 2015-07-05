@@ -1,14 +1,18 @@
+import datetime
 from unittest import TestCase
 
+import imapclient
 
 from gmailfilter.tests.factory import TestFactoryMixin
 from gmailfilter.test import (
     Test,
     And,
     Or,
+    Not,
     MatchesHeader,
     SubjectContains,
     ListId,
+    HasFlag,
 )
 from gmailfilter._message import Message
 
@@ -68,6 +72,18 @@ class TestBooleanTests(TestCase, TestFactoryMixin):
                 expected_value,
                 Or(*operands).match(self.get_email_message())
             )
+
+    def test_not_with_passing_test(self):
+        self.assertEqual(
+            False,
+            Not(AlwaysPassingTest()).match(self.get_email_message())
+        )
+
+    def test_not_with_failing_test(self):
+        self.assertEqual(
+            True,
+            Not(AlwaysFailingTest()).match(self.get_email_message())
+        )
 
 
 class TestMatchesHeaderTests(TestCase, TestFactoryMixin):
@@ -139,3 +155,25 @@ class ListIdTests(TestCase, TestFactoryMixin):
     def test_non_list_message(self):
         message = self.get_email_message()
         self.assertFalse(ListId('something.else').match(message))
+
+
+class FlagTests(TestCase, TestFactoryMixin):
+
+    def test_all_flag_matchers(self):
+        flags = (
+            imapclient.ANSWERED,
+            imapclient.DELETED,
+            imapclient.DRAFT,
+            imapclient.FLAGGED,
+            imapclient.RECENT,
+            imapclient.SEEN,
+        )
+        for flag in flags:
+            message = self.get_email_message(flags=(flag,))
+            self.assertTrue(HasFlag(flag).match(message))
+
+
+class MessageAgeTests(TestCase, TestFactoryMixin):
+
+    def test_newer_message(self):
+        now = datetime.datetime(2015, 7, 5)
