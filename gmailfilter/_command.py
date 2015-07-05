@@ -18,19 +18,10 @@ def run():
     args = configure_argument_parser()
     log_level = logging.DEBUG if args.verbose else logging.INFO
     logging.basicConfig(level=log_level, stream=sys.stdout)
-    if not args.dev:
-        run_old_filter()
-    else:
-        run_new_filter()
-
-
-def run_old_filter():
-    """Run the old, pre v1 filter agent. This will get deleted soon."""
-    rules_path = get_filter_file_or_raise()
-
-    with open(rules_path) as f:
-        code = compile(f.read(), rules_path, 'exec')
-        exec(code, get_rule_globals_dict())
+    if args.dev:
+        # run_old_filter()
+        print("The --dev option is deprecated. The New hotness is everywhere now.")
+    run_new_filter()
 
 
 def run_new_filter():
@@ -73,14 +64,6 @@ def configure_argument_parser():
     parser.add_argument('-v', '--verbose', action='store_true', help="Be more verbose")
     parser.add_argument('--dev', action='store_true', help="Run new, development code.")
     return parser.parse_args()
-
-
-def get_filter_file_or_raise():
-    path = os.path.expanduser('~/.config/gmailfilter/rules')
-    if not os.path.exists(path):
-        raise IOError("Rules file %r does not exist" % path)
-    # TODO: Check for readability?
-    return path
 
 
 def get_rule_globals_dict():
