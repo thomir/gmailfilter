@@ -46,7 +46,7 @@ class EmailMessage(Message):
     def _get_email(self):
         if self._message is None:
             self._message = email.message_from_string(
-                self._connection_proxy.get_message_part('BODY.PEEK[HEADER]')
+                self._connection_proxy.get_message_part(b'BODY.PEEK[HEADER]').decode()
             )
         return self._message
 
@@ -65,7 +65,7 @@ class EmailMessage(Message):
         return parse_list_id(list_id) if list_id is not None else None
 
     def uid(self):
-        return self._connection_proxy.get_message_part('UID')
+        return self._connection_proxy.get_message_part(b'UID')
 
     def get_headers(self):
         # TODO: email objects are dictionaries for the headers, but also expose
@@ -74,10 +74,10 @@ class EmailMessage(Message):
         return self._get_email()
 
     def get_date(self):
-        return self._connection_proxy.get_message_part('INTERNALDATE')
+        return self._connection_proxy.get_message_part(b'INTERNALDATE')
 
     def get_flags(self):
-        return self._connection_proxy.get_message_part('FLAGS')
+        return self._connection_proxy.get_message_part(b'FLAGS')
 
     def __repr__(self):
         return repr(self.subject())

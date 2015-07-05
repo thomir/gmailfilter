@@ -31,7 +31,7 @@ setup(
     packages=['gmailfilter'],
     # packages=find_packages('gmailfilter'),
     # test_suite='gmailfilter.tests',
-    install_requires=['IMAPClient==0.11'],
+    install_requires=['IMAPClient==0.13'],
     entry_points={
         'console_scripts': ['gmailfilter = gmailfilter._command:run']
     },

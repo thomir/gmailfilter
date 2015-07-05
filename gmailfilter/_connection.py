@@ -39,7 +39,7 @@ class MessageConnectionProxy(object):
     """A class that knows how to retrieve additional message parts."""
 
     def __init__(self, connection, initial_data):
-        assert 'UID' in initial_data
+        assert b'UID' in initial_data
         self._connection = connection
         self._data = initial_data
 
@@ -50,8 +50,8 @@ class MessageConnectionProxy(object):
 
         """
         # transform 'BODY.PEEK[HEADER]' into 'BODY[HEADER]'
-        if part_name.startswith('BODY.PEEK'):
-            retrieve_key = 'BODY' + part_name[9:]
+        if part_name.startswith(b'BODY.PEEK'):
+            retrieve_key = b'BODY' + part_name[9:]
         else:
             retrieve_key = part_name
 
@@ -59,7 +59,7 @@ class MessageConnectionProxy(object):
         # 'retrieve_key'
         if retrieve_key not in self._data:
             with self._connection.use_uid():
-                msg_uid = self._data['UID']
+                msg_uid = self._data[b'UID']
                 # for some reason, sometimes a fetch call returns an empty dict.
                 # until I find out why, I'll simply retry this:
                 data = {}
@@ -94,7 +94,7 @@ class IMAPConnection(object):
         """
         # TODO - perahps the user wants to filter a different folder?
         mbox_details = self._client.select_folder("INBOX")
-        total_messages = mbox_details['EXISTS']
+        total_messages = mbox_details[b'EXISTS']
         logging.info("Scanning inbox, found %d messages" % total_messages)
         # TODO: Research best chunk size - maybe let user tweak this from
         # config file?:

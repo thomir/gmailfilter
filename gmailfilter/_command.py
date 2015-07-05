@@ -5,7 +5,6 @@ import sys
 from argparse import ArgumentParser
 
 from gmailfilter._connection import (
-    IMAPServer,
     IMAPConnection,
     ServerInfo,
     default_credentials_file_location,
@@ -64,10 +63,3 @@ def configure_argument_parser():
     parser.add_argument('-v', '--verbose', action='store_true', help="Be more verbose")
     parser.add_argument('--dev', action='store_true', help="Run new, development code.")
     return parser.parse_args()
-
-
-def get_rule_globals_dict():
-    rule_globals = {
-        'IMAPServer': IMAPServer
-    }
-    return rule_globals
