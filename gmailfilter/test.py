@@ -10,6 +10,7 @@ from datetime import (
     datetime,
     timedelta,
 )
+import logging
 import operator
 import unicodedata
 
@@ -174,6 +175,17 @@ class ListId(Test):
         return get_list_id(message) == self._target_list
 
 
+# IMAPClient incorrectly declares these as strings. This is reported as
+# https://bitbucket.org/mjs0/imapclient/issues/165/imapclientseen-friends-have-the-wrong-type
+# Once this is fixed, the '.encode' parts can be stripped
+def _correct_type(flag):
+    if isinstance(flag, bytes):
+        logging.debug("This fix can be removed now!")
+        return flag
+    else:
+        return flag.encode('utf-8')
+
+
 class HasFlag(Test):
 
     """Test for certain flags being set on a message.
@@ -189,13 +201,12 @@ class HasFlag(Test):
     HasFlag.SEEN
 
     """
-
-    ANSWERED = imapclient.ANSWERED
-    DELETED = imapclient.DELETED
-    DRAFT = imapclient.DRAFT
-    FLAGGED = imapclient.FLAGGED
-    RECENT = imapclient.RECENT
-    SEEN = imapclient.SEEN
+    ANSWERED = _correct_type(imapclient.ANSWERED)
+    DELETED = _correct_type(imapclient.DELETED)
+    DRAFT = _correct_type(imapclient.DRAFT)
+    FLAGGED = _correct_type(imapclient.FLAGGED)
+    RECENT = _correct_type(imapclient.RECENT)
+    SEEN = _correct_type(imapclient.SEEN)
 
     def __init__(self, flag):
         self.expected_flag = flag
