@@ -1,4 +1,5 @@
 
+import imapclient
 import logging
 
 """Classes that manipulate mails."""
@@ -32,15 +33,14 @@ class Move(Action):
         self._target_folder = target_folder
 
     def process(self, conn, message):
-        # TODO: optimise this by trying the copy, and if we get 'NO' with
-        # 'TRYCREATE' then, and only then try and create the folder. Removes the
-        # overhead of the existance check for every message,
-        if not conn.folder_exists(self._target_folder):
+        try:
+            conn.copy(message.uid(), self._target_folder)
+        except imapclient.IMAPClient.Error as e:
             status = conn.create_folder(self._target_folder)
+            assert status.lower() == b"success", "Unable to create folder %s" % self._target_folder
+            conn.copy(message.uid(), self._target_folder)
 
-            assert status.lower() == "success", "Unable to create folder %s" % self._target_folder
 
-        conn.copy(message.uid(), self._target_folder)
         # TODO: Maybe provide logging facilities in parent 'Action' class?
         conn.delete_messages(message.uid())
         logging.info("Moving message %r to %s" % (message, self._target_folder))
