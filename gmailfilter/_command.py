@@ -46,7 +46,12 @@ def run_new_filter():
         print(e)
         sys.exit(2)
 
-    connection = IMAPConnection(s)
+    try:
+        connection = IMAPConnection(s)
+    except RuntimeError as e:
+        print("Error: %s" % e)
+        sys.exit(3)
+
     rule_processor = _rules.SimpleRuleProcessor(
         rules,
         connection.get_connection_proxy()

@@ -1,6 +1,7 @@
 from contextlib import contextmanager
 import configparser
 import functools
+import imaplib
 import logging
 import os
 import os.path
@@ -74,18 +75,34 @@ class MessageConnectionProxy(object):
 
 class IMAPConnection(object):
 
+    """A low-level connection to an imap server. """
+
     def __init__(self, server_info):
-        self._client = IMAPClient(
-            host=server_info.host,
-            port=server_info.port,
-            use_uid=False,
-            ssl=server_info.use_ssl
-            )
+        """Create an IMAPConnection object.
+
+        This method connects to the server, and attempts to log in.
+
+        :raises RuntimeError: If the connection or login steps could not be
+            completed.
+
+        """
+        try:
+            self._client = IMAPClient(
+                host=server_info.host,
+                port=server_info.port,
+                use_uid=False,
+                ssl=server_info.use_ssl
+                )
+        except imaplib.IMAP4.error as e:
+            raise RuntimeError("Failed to connect: %s" % e)
         # self._client.debug = True
-        self._client.login(
-            server_info.username,
-            server_info.password,
-        )
+        try:
+            self._client.login(
+                server_info.username,
+                server_info.password,
+            )
+        except imaplib.IMAP4.error as e:
+            raise RuntimeError("Failed to authenticate: %s" % e)
 
     def get_messages(self):
         """A generator that yields Message instances, one for every message
