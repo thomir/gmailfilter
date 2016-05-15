@@ -51,7 +51,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'gmailfilter'
-copyright = '2015, Thomi Richards'
+copyright = '2015-2016, Thomi Richards'
 author = 'Thomi Richards'
 
 # The version info for the project you're documenting, acts as replacement for

@@ -3,11 +3,11 @@ import logging
 import sys
 from argparse import ArgumentParser
 
-from gmailfilter._config import ServerInfo
-from gmailfilter._connection import (
-    IMAPConnection,
+from gmailfilter._config import (
+    ServerInfo,
     default_credentials_file_location,
 )
+from gmailfilter._connection import IMAPConnection
 from gmailfilter import _rules
 
 
