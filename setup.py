@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
 
 import sys
-
-assert sys.version >= '3'
 from setuptools.command.test import test as TestCommand
-from setuptools import find_packages, setup
+from setuptools import setup
+assert sys.version >= '3'
 
 
 class TestDiscoverCommand(TestCommand):
@@ -18,8 +17,8 @@ class TestDiscoverCommand(TestCommand):
         self.test_suite = True
 
     def run_tests(self):
-        import unittest   # this will import unittest2
-        unittest.main(argv=['', 'discover']).runTests()
+        import testtools.run
+        testtools.run.main(argv=['', 'discover'], stdout=sys.stdout)
 
 
 setup(
@@ -29,11 +28,10 @@ setup(
     author_email='thomi.richards@canonical.com',
     url='http://launchpad.net/gmailfilter',
     packages=['gmailfilter'],
-    # packages=find_packages('gmailfilter'),
-    # test_suite='gmailfilter.tests',
     install_requires=['IMAPClient==0.13'],
     entry_points={
         'console_scripts': ['gmailfilter = gmailfilter._command:run']
     },
     cmdclass={'test': TestDiscoverCommand},
+    tests_require=['testtools', 'fixtures']
 )

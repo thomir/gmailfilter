@@ -35,15 +35,16 @@ class Move(Action):
     def process(self, conn, message):
         try:
             conn.copy(message.uid(), self._target_folder)
-        except imapclient.IMAPClient.Error as e:
+        except imapclient.IMAPClient.Error:
             status = conn.create_folder(self._target_folder)
-            assert status.lower() == b"success", "Unable to create folder %s" % self._target_folder
+            assert status.lower() == b"success", \
+                "Unable to create folder %s" % self._target_folder
             conn.copy(message.uid(), self._target_folder)
-
 
         # TODO: Maybe provide logging facilities in parent 'Action' class?
         conn.delete_messages(message.uid())
-        logging.info("Moving message %r to %s" % (message, self._target_folder))
+        logging.info(
+            "Moving message %r to %s" % (message, self._target_folder))
 
 
 class DeleteMessage(Action):

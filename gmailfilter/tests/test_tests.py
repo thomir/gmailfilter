@@ -1,5 +1,5 @@
 import datetime
-from unittest import TestCase
+from testtools import TestCase
 
 import imapclient
 

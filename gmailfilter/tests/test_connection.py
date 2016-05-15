@@ -1,7 +1,7 @@
-from unittest import TestCase
-
+from testtools import TestCase
 
 from gmailfilter import _connection as c
+
 
 class SequenceChunkTests(TestCase):
 
@@ -29,6 +29,3 @@ class SequenceChunkTests(TestCase):
 
     def test_with_no_chunking(self):
         self.assertSequenceChunk(5, 1, ['1', '2', '3', '4', '5'])
-
-
-

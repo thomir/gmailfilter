@@ -1,12 +1,11 @@
 
 import logging
-import os
 import sys
 from argparse import ArgumentParser
 
+from gmailfilter._config import ServerInfo
 from gmailfilter._connection import (
     IMAPConnection,
-    ServerInfo,
     default_credentials_file_location,
 )
 from gmailfilter import _rules
@@ -17,9 +16,6 @@ def run():
     args = configure_argument_parser()
     log_level = logging.DEBUG if args.verbose else logging.INFO
     logging.basicConfig(level=log_level, stream=sys.stdout)
-    if args.dev:
-        # run_old_filter()
-        print("The --dev option is deprecated. The New hotness is everywhere now.")
     run_new_filter()
 
 
@@ -65,6 +61,10 @@ def configure_argument_parser():
         prog="gmailfilter",
         description="Filter IMAP emails the easy way!"
     )
-    parser.add_argument('-v', '--verbose', action='store_true', help="Be more verbose")
-    parser.add_argument('--dev', action='store_true', help="Run new, development code.")
+    parser.add_argument(
+        '-v',
+        '--verbose',
+        action='store_true',
+        help="Be more verbose"
+    )
     return parser.parse_args()

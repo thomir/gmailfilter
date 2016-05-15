@@ -1,8 +1,9 @@
 
 
-from unittest import TestCase
+from testtools import TestCase
 
 from gmailfilter._message import parse_list_id
+
 
 class ListIdParsingTestCase(TestCase):
 

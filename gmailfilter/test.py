@@ -26,6 +26,7 @@ __all__ = [
     'MatchesHeader',
 ]
 
+
 class Test(object):
 
     """This class represents a single test on a message.

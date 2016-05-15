@@ -65,7 +65,10 @@ def write_default_rules_file(path=None):
             '''
         ))
 
+
 def default_rules_path():
+    if 'SNAP_USER_DATA' in os.environ:
+        return os.path.join(os.environ['SNAP_USER_DATA'], 'rules.py')
     return os.path.expanduser('~/.config/gmailfilter/rules.py')
 
 
@@ -93,7 +96,8 @@ class RuleSet(object):
                 )
             test = rule[0]
             if not callable(getattr(test, 'match', None)):
-                raise RuleLoadError('Test for rule {} does not have a '
+                raise RuleLoadError(
+                    'Test for rule {} does not have a '
                     'callable "match" method.'.format(rule_repr)
                 )
 
