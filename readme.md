@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/thomir/gmailfilter.svg?branch=master)](https://travis-ci.org/thomir/gmailfilter)
+
 # What is this?
 
 This is the source code to my personal IMAP-based mail filtering tool. I use it every day, and it has proven to be useful for me. You are more than welcome to use and contribute to it.
